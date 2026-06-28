@@ -2,7 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import { GuestRoute, ProtectedRoute } from '@/components/auth';
 import { RoleDashboardRedirect } from '@/components/auth/RoleDashboardRedirect';
-import { DashboardLayout, MainLayout } from '@/components/layout';
+import { DashboardLayout, MainLayout, AdminLayout } from '@/components/layout';
 import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { RegisterPage } from '@/pages/auth/RegisterPage';
@@ -21,8 +21,7 @@ import { JobFormPage } from '@/pages/recruiter/JobFormPage';
 import { ManageJobsPage } from '@/pages/recruiter/ManageJobsPage';
 import { RecruiterAnalyticsPage } from '@/pages/recruiter/RecruiterAnalyticsPage';
 import { RecruiterDashboardPage } from '@/pages/recruiter/RecruiterDashboardPage';
-import { AdminPage } from '@/pages/AdminPage';
-import { HomePage } from '@/pages/HomePage';
+import { AdminCodingProblemsPage } from '@/pages/coding/AdminCodingProblemsPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { ProfilePage } from '@/pages/ProfilePage';
 import { ProfilePreviewPage } from '@/pages/ProfilePreviewPage';
@@ -48,7 +47,21 @@ import { DailyChallengePage } from '@/pages/coding/DailyChallengePage';
 import { ContestsPage } from '@/pages/coding/ContestsPage';
 import { ContestDetailPage } from '@/pages/coding/ContestDetailPage';
 import { CodingProgressPage } from '@/pages/coding/CodingProgressPage';
-import { AdminCodingProblemsPage } from '@/pages/coding/AdminCodingProblemsPage';
+import { AdminAnalyticsPage } from '@/pages/admin/AdminAnalyticsPage';
+import { AdminAuditPage } from '@/pages/admin/AdminAuditPage';
+import { AdminCmsPage } from '@/pages/admin/AdminCmsPage';
+import { AdminCodingPage } from '@/pages/admin/AdminCodingPage';
+import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage';
+import { AdminInterviewsPage } from '@/pages/admin/AdminInterviewsPage';
+import { AdminJobsPage } from '@/pages/admin/AdminJobsPage';
+import { AdminNotificationsPage } from '@/pages/admin/AdminNotificationsPage';
+import { AdminRecruitersPage } from '@/pages/admin/AdminRecruitersPage';
+import { AdminReportsPage } from '@/pages/admin/AdminReportsPage';
+import { AdminResumesPage } from '@/pages/admin/AdminResumesPage';
+import { AdminSettingsPage } from '@/pages/admin/AdminSettingsPage';
+import { AdminUserDetailPage } from '@/pages/admin/AdminUserDetailPage';
+import { AdminUsersPage } from '@/pages/admin/AdminUsersPage';
+import { HomePage } from '@/pages/HomePage';
 
 export const router = createBrowserRouter([
   {
@@ -92,7 +105,6 @@ export const router = createBrowserRouter([
       { path: 'coding/contests', element: <ProtectedRoute roles={['student']}><ContestsPage /></ProtectedRoute> },
       { path: 'coding/contests/:id', element: <ProtectedRoute roles={['student']}><ContestDetailPage /></ProtectedRoute> },
       { path: 'coding/progress', element: <ProtectedRoute roles={['student']}><CodingProgressPage /></ProtectedRoute> },
-      { path: 'admin/coding/problems', element: <ProtectedRoute roles={['admin']}><AdminCodingProblemsPage /></ProtectedRoute> },
       { path: 'jobs', element: <ProtectedRoute roles={['student']}><JobsBrowsePage /></ProtectedRoute> },
       { path: 'jobs/saved', element: <ProtectedRoute roles={['student']}><SavedJobsPage /></ProtectedRoute> },
       { path: 'jobs/:id', element: <ProtectedRoute roles={['student']}><JobDetailPage /></ProtectedRoute> },
@@ -106,7 +118,30 @@ export const router = createBrowserRouter([
       { path: 'recruiter/jobs/:jobId/applicants', element: <ProtectedRoute roles={['recruiter']}><JobApplicantsPage /></ProtectedRoute> },
       { path: 'recruiter/applicants/:id', element: <ProtectedRoute roles={['recruiter']}><ApplicantDetailPage /></ProtectedRoute> },
       { path: 'recruiter/analytics', element: <ProtectedRoute roles={['recruiter']}><RecruiterAnalyticsPage /></ProtectedRoute> },
-      { path: 'admin', element: <ProtectedRoute roles={['admin']}><AdminPage /></ProtectedRoute> },
+    ],
+  },
+  {
+    element: (
+      <ProtectedRoute roles={['admin', 'sub_admin']}>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      { path: 'admin', element: <AdminDashboardPage /> },
+      { path: 'admin/analytics', element: <AdminAnalyticsPage /> },
+      { path: 'admin/users', element: <AdminUsersPage /> },
+      { path: 'admin/users/:id', element: <AdminUserDetailPage /> },
+      { path: 'admin/recruiters', element: <AdminRecruitersPage /> },
+      { path: 'admin/jobs', element: <AdminJobsPage /> },
+      { path: 'admin/resumes', element: <AdminResumesPage /> },
+      { path: 'admin/coding', element: <AdminCodingPage /> },
+      { path: 'admin/coding/problems', element: <AdminCodingProblemsPage /> },
+      { path: 'admin/interviews', element: <AdminInterviewsPage /> },
+      { path: 'admin/cms', element: <AdminCmsPage /> },
+      { path: 'admin/notifications', element: <AdminNotificationsPage /> },
+      { path: 'admin/reports', element: <AdminReportsPage /> },
+      { path: 'admin/audit', element: <AdminAuditPage /> },
+      { path: 'admin/settings', element: <AdminSettingsPage /> },
     ],
   },
   {

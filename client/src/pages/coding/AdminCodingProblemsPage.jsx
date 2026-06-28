@@ -65,7 +65,7 @@ export function AdminCodingProblemsPage() {
           <p className="text-muted-foreground">Admin-only CRUD for coding challenges</p>
         </div>
         <div className="flex gap-2">
-          <Link to="/admin"><Button variant="outline">← Admin</Button></Link>
+          <Link to="/admin/coding"><Button variant="outline">← Coding</Button></Link>
           <Button onClick={() => setShowForm(!showForm)}>{showForm ? 'Cancel' : 'New Problem'}</Button>
         </div>
       </div>

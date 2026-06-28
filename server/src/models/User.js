@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const ROLES = ['student', 'recruiter', 'admin'];
+const ROLES = ['student', 'recruiter', 'sub_admin', 'admin'];
 
 const refreshTokenSchema = new mongoose.Schema(
   {

@@ -4,3 +4,6 @@ export { MainLayout } from './MainLayout';
 export { Sidebar } from './Sidebar';
 export { DashboardNavbar } from './DashboardNavbar';
 export { DashboardLayout } from './DashboardLayout';
+export { AdminLayout } from './AdminLayout';
+export { AdminNavbar } from './AdminNavbar';
+export { AdminSidebar } from './AdminSidebar';

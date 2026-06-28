@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
-export const Select = forwardRef(function Select({ className, label, error, id, options, ...props }, ref) {
+export const Select = forwardRef(function Select({ className, label, error, id, options, children, ...props }, ref) {
   const selectId = id || props.name;
 
   return (
@@ -24,11 +24,13 @@ export const Select = forwardRef(function Select({ className, label, error, id, 
         )}
         {...props}
       >
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
+        {options
+          ? options.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))
+          : children}
       </select>
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>

@@ -51,7 +51,7 @@ export function Navbar() {
                 {link.label}
               </NavLink>
             ))}
-            {isAuthenticated && user?.role === 'admin' && (
+            {isAuthenticated && (user?.role === 'admin' || user?.role === 'sub_admin') && (
               <NavLink
                 to="/admin"
                 className={({ isActive }) =>

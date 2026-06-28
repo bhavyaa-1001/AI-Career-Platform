@@ -55,13 +55,13 @@ const ADMIN_LINK = { to: '/admin', label: 'Admin', icon: 'M9 12l2 2 4-4m5.618-4.
 
 export function Sidebar({ completion = 0, isOpen, onClose, showCompletion = true }) {
 
-  const { isAdmin, isRecruiter } = useAuth();
+  const { isAdminPanelUser, isRecruiter } = useAuth();
 
 
 
   let items = isRecruiter ? RECRUITER_NAV : STUDENT_NAV;
 
-  if (isAdmin) items = [...items, ADMIN_LINK];
+  if (isAdminPanelUser) items = [...items, ADMIN_LINK];
 
 
 

@@ -14,5 +14,8 @@ export function useAuth() {
     isStudent: auth.user?.role === 'student',
     isRecruiter: auth.user?.role === 'recruiter',
     isAdmin: auth.user?.role === 'admin',
+    isSubAdmin: auth.user?.role === 'sub_admin',
+    isAdminPanelUser: auth.user?.role === 'admin' || auth.user?.role === 'sub_admin',
+    isFullAdmin: auth.user?.role === 'admin',
   };
 }

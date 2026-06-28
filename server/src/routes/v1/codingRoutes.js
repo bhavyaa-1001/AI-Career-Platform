@@ -72,7 +72,7 @@ router.get('/ai/hints/:problemId', validate(hintSessionSchema), hintSessionHandl
 
 // Admin only
 const admin = Router();
-admin.use(authorize('admin'));
+admin.use(authorize('admin', 'sub_admin'));
 
 admin.get('/problems/:id', validate(idParamSchema), adminGetProblemHandler);
 admin.post('/problems', validate(createProblemSchema), createProblemHandler);

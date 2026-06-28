@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import adminRoutes from './adminRoutes.js';
 import analysisRoutes from './analysisRoutes.js';
 import authRoutes from './authRoutes.js';
 import codingRoutes from './codingRoutes.js';
@@ -17,6 +18,7 @@ import templateRoutes from './templateRoutes.js';
 const router = Router();
 
 router.use('/health', healthRoutes);
+router.use('/admin', adminRoutes);
 router.use('/auth', authRoutes);
 router.use('/profile', profileRoutes);
 router.use('/dashboard', dashboardRoutes);

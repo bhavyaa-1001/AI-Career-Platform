@@ -11,6 +11,7 @@
     "lint:fix": "eslint src/ --fix",
     "format": "prettier --write \"src/**/*.js\"",
     "seed:admin": "node scripts/seed-admin.js",
+    "seed:admin-data": "node scripts/seed-admin-data.js",
     "seed:coding": "node scripts/seed-coding-problems.js"
   },
   "keywords": [],
