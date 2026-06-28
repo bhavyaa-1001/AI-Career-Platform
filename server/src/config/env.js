@@ -31,6 +31,11 @@ const envSchema = z.object({
   JUDGE0_API_URL: z.string().url().default('https://ce.judge0.com'),
   JUDGE0_AUTH_TOKEN: z.string().optional().transform((v) => v?.trim() || undefined),
   JUDGE0_RAPIDAPI_KEY: z.string().optional().transform((v) => v?.trim() || undefined),
+
+  STRIPE_SECRET_KEY: z.string().optional().transform((v) => v?.trim() || undefined),
+  STRIPE_WEBHOOK_SECRET: z.string().optional().transform((v) => v?.trim() || undefined),
+  STRIPE_PUBLISHABLE_KEY: z.string().optional().transform((v) => v?.trim() || undefined),
+  STRIPE_MODE: z.enum(['test', 'live']).optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -51,3 +56,29 @@ export const isCloudinaryConfigured = Boolean(
 export const isGeminiConfigured = Boolean(env.GEMINI_API_KEY);
 
 export const isJudge0Configured = Boolean(env.JUDGE0_AUTH_TOKEN || env.JUDGE0_RAPIDAPI_KEY);
+
+export const isStripeConfigured = Boolean(env.STRIPE_SECRET_KEY);
+export const isStripeWebhookConfigured = Boolean(env.STRIPE_SECRET_KEY && env.STRIPE_WEBHOOK_SECRET);
+
+const detectKeyMode = (key) => {
+  if (!key) return null;
+  if (key.startsWith('sk_test_') || key.startsWith('pk_test_')) return 'test';
+  if (key.startsWith('sk_live_') || key.startsWith('pk_live_')) return 'live';
+  return null;
+};
+
+const secretMode = detectKeyMode(env.STRIPE_SECRET_KEY);
+const publishableMode = detectKeyMode(env.STRIPE_PUBLISHABLE_KEY);
+
+export const stripeMode = env.STRIPE_MODE
+  || secretMode
+  || (env.NODE_ENV === 'production' ? 'live' : 'test');
+
+export const isStripeTestMode = stripeMode === 'test';
+
+if (env.STRIPE_SECRET_KEY && secretMode && secretMode !== stripeMode) {
+  console.warn(`[Stripe] STRIPE_MODE=${stripeMode} but secret key appears to be ${secretMode} mode`);
+}
+if (env.STRIPE_PUBLISHABLE_KEY && publishableMode && secretMode && publishableMode !== secretMode) {
+  console.warn('[Stripe] Publishable and secret keys are from different Stripe modes');
+}

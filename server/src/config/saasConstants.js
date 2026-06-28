@@ -1,0 +1,133 @@
+export const PLAN_SLUGS = ['free', 'starter', 'pro', 'enterprise'];
+
+export const DEFAULT_PLAN_LIMITS = {
+  aiCredits: 0,
+  resumeLimit: 0,
+  resumeTemplates: 0,
+  jobApplications: 0,
+  storageMb: 0,
+  codingProblems: 0,
+  interviewSessions: 0,
+  prioritySupport: false,
+  apiRequests: 0,
+  codingSubmissions: 0,
+};
+
+export const USAGE_KEYS = [
+  'aiCredits',
+  'storageMb',
+  'resumeCount',
+  'interviewCount',
+  'apiUsage',
+  'codingSubmissions',
+  'jobApplications',
+];
+
+export const UNLIMITED = -1;
+
+export const isUnlimited = (value) => value === UNLIMITED;
+
+export const SAAS_PLANS = [
+  {
+    name: 'Free',
+    slug: 'free',
+    description: 'Get started with essential career tools',
+    price: 0,
+    interval: 'monthly',
+    audience: 'both',
+    sortOrder: 0,
+    trialDays: 0,
+    features: ['Basic resume builder', 'Limited AI credits', 'Job browsing'],
+    limits: {
+      aiCredits: 10,
+      resumeLimit: 1,
+      resumeTemplates: 2,
+      jobApplications: 5,
+      storageMb: 100,
+      codingProblems: 5,
+      interviewSessions: 0,
+      prioritySupport: false,
+      apiRequests: 100,
+      codingSubmissions: 20,
+    },
+  },
+  {
+    name: 'Starter',
+    slug: 'starter',
+    description: 'For active job seekers leveling up',
+    price: 9.99,
+    interval: 'monthly',
+    audience: 'both',
+    sortOrder: 1,
+    trialDays: 7,
+    features: ['More AI credits', '3 resumes', 'Resume templates', 'Coding practice'],
+    limits: {
+      aiCredits: 50,
+      resumeLimit: 3,
+      resumeTemplates: 5,
+      jobApplications: 25,
+      storageMb: 500,
+      codingProblems: 25,
+      interviewSessions: 2,
+      prioritySupport: false,
+      apiRequests: 1000,
+      codingSubmissions: 100,
+    },
+  },
+  {
+    name: 'Pro',
+    slug: 'pro',
+    description: 'Power users and serious candidates',
+    price: 29.99,
+    interval: 'monthly',
+    audience: 'both',
+    sortOrder: 2,
+    trialDays: 14,
+    features: ['High AI credits', '10 resumes', 'All templates', 'Interview prep', 'Priority queue'],
+    limits: {
+      aiCredits: 200,
+      resumeLimit: 10,
+      resumeTemplates: 10,
+      jobApplications: 100,
+      storageMb: 2048,
+      codingProblems: 100,
+      interviewSessions: 10,
+      prioritySupport: false,
+      apiRequests: 10000,
+      codingSubmissions: 500,
+    },
+  },
+  {
+    name: 'Enterprise',
+    slug: 'enterprise',
+    description: 'Teams and organizations at scale',
+    price: 99.99,
+    interval: 'monthly',
+    audience: 'both',
+    sortOrder: 3,
+    trialDays: 14,
+    features: ['Unlimited AI', 'Unlimited resumes', 'Team accounts', 'Priority support', 'API access'],
+    limits: {
+      aiCredits: UNLIMITED,
+      resumeLimit: UNLIMITED,
+      resumeTemplates: UNLIMITED,
+      jobApplications: UNLIMITED,
+      storageMb: 10240,
+      codingProblems: UNLIMITED,
+      interviewSessions: UNLIMITED,
+      prioritySupport: true,
+      apiRequests: UNLIMITED,
+      codingSubmissions: UNLIMITED,
+    },
+  },
+];
+
+export const USAGE_TO_LIMIT_MAP = {
+  aiCredits: 'aiCredits',
+  storageMb: 'storageMb',
+  resumeCount: 'resumeLimit',
+  interviewCount: 'interviewSessions',
+  apiUsage: 'apiRequests',
+  codingSubmissions: 'codingSubmissions',
+  jobApplications: 'jobApplications',
+};

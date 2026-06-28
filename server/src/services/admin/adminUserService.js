@@ -1,11 +1,11 @@
 import bcrypt from 'bcryptjs';
 
+import { assertCanAssignRole, assertCanModifyPrivilegedUser, isFullAdmin } from '../../config/roles.js';
 import { Activity } from '../../models/Activity.js';
 import { User, ROLES } from '../../models/User.js';
 import { AdminUserMeta } from '../../models/admin/AdminUserMeta.js';
 import { AiUsageLog } from '../../models/admin/AiUsageLog.js';
 import { LoginHistory } from '../../models/admin/LoginHistory.js';
-import { assertCanAssignRole, assertCanModifyPrivilegedUser, isFullAdmin } from '../../config/roles.js';
 import { ApiError } from '../../utils/ApiError.js';
 
 import { logAdminAction } from './auditService.js';

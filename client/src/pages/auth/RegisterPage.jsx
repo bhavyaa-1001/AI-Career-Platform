@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 import { AuthLayout } from '@/components/auth';
@@ -24,6 +24,8 @@ const passwordRules = {
 
 export function RegisterPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const referralFromUrl = searchParams.get('ref') || '';
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -34,7 +36,7 @@ export function RegisterPage() {
     watch,
     formState: { errors },
   } = useForm({
-    defaultValues: { role: 'student' },
+    defaultValues: { role: 'student', referralCode: referralFromUrl },
   });
 
   const password = watch('password');
@@ -120,6 +122,13 @@ export function RegisterPage() {
           options={ROLE_OPTIONS}
           error={errors.role?.message}
           {...register('role', { required: 'Please select a role' })}
+        />
+
+        <Input
+          label="Referral code (optional)"
+          placeholder="FRIEND123"
+          error={errors.referralCode?.message}
+          {...register('referralCode')}
         />
 
         <Input

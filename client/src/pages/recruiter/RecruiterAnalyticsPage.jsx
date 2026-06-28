@@ -20,7 +20,17 @@ export function RecruiterAnalyticsPage() {
     );
   }
 
-  const analytics = data.data.analytics;
+  const analytics = data?.data?.analytics;
+
+  if (!analytics) {
+    return (
+      <div className="text-center">
+        <p className="text-muted-foreground">Unable to load analytics data.</p>
+        <Button className="mt-4" onClick={() => refetch()}>Retry</Button>
+      </div>
+    );
+  }
+
   const totalApps = Object.values(analytics.applicationsByStatus || {}).reduce((a, b) => a + b, 0);
   const openJobs = analytics.jobsByStatus?.open || 0;
 

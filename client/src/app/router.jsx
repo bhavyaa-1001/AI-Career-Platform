@@ -61,6 +61,12 @@ import { AdminResumesPage } from '@/pages/admin/AdminResumesPage';
 import { AdminSettingsPage } from '@/pages/admin/AdminSettingsPage';
 import { AdminUserDetailPage } from '@/pages/admin/AdminUserDetailPage';
 import { AdminUsersPage } from '@/pages/admin/AdminUsersPage';
+import { AdminSaasPage } from '@/pages/admin/AdminSaasPage';
+import { BillingPage } from '@/pages/billing/BillingPage';
+import { PricingPage } from '@/pages/billing/PricingPage';
+import { AccountSettingsPage } from '@/pages/settings/AccountSettingsPage';
+import { ReferralPage } from '@/pages/referral/ReferralPage';
+import { DeveloperPage } from '@/pages/developer/DeveloperPage';
 import { HomePage } from '@/pages/HomePage';
 
 export const router = createBrowserRouter([
@@ -118,7 +124,17 @@ export const router = createBrowserRouter([
       { path: 'recruiter/jobs/:jobId/applicants', element: <ProtectedRoute roles={['recruiter']}><JobApplicantsPage /></ProtectedRoute> },
       { path: 'recruiter/applicants/:id', element: <ProtectedRoute roles={['recruiter']}><ApplicantDetailPage /></ProtectedRoute> },
       { path: 'recruiter/analytics', element: <ProtectedRoute roles={['recruiter']}><RecruiterAnalyticsPage /></ProtectedRoute> },
+      { path: 'billing', element: <BillingPage /> },
+      { path: 'pricing', element: <PricingPage /> },
+      { path: 'settings', element: <AccountSettingsPage /> },
+      { path: 'referrals', element: <ReferralPage /> },
+      { path: 'developer', element: <DeveloperPage /> },
     ],
+  },
+  {
+    path: '/pricing',
+    element: <MainLayout />,
+    children: [{ index: true, element: <PricingPage /> }],
   },
   {
     element: (
@@ -142,6 +158,7 @@ export const router = createBrowserRouter([
       { path: 'admin/reports', element: <AdminReportsPage /> },
       { path: 'admin/audit', element: <AdminAuditPage /> },
       { path: 'admin/settings', element: <AdminSettingsPage /> },
+      { path: 'admin/saas', element: <AdminSaasPage /> },
     ],
   },
   {

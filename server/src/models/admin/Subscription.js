@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export const SUBSCRIPTION_STATUSES = ['active', 'cancelled', 'expired', 'trialing', 'past_due'];
+export const SUBSCRIPTION_STATUSES = ['active', 'cancelled', 'expired', 'trialing', 'past_due', 'incomplete'];
 
 const subscriptionSchema = new mongoose.Schema(
   {
@@ -22,6 +22,11 @@ const subscriptionSchema = new mongoose.Schema(
     currentPeriodEnd: { type: Date, default: null },
     cancelledAt: { type: Date, default: null },
     externalId: { type: String, maxlength: 200, default: '' },
+    stripeSubscriptionId: { type: String, default: '', index: true },
+    stripeCustomerId: { type: String, default: '' },
+    cancelAtPeriodEnd: { type: Boolean, default: false },
+    trialEnd: { type: Date, default: null },
+    couponId: { type: mongoose.Schema.Types.ObjectId, ref: 'Coupon', default: null },
   },
   { timestamps: true },
 );

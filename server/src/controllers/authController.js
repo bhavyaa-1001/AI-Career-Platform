@@ -14,6 +14,7 @@ import {
   uploadUserAvatar,
   verifyEmail,
 } from '../services/authService.js';
+import { initializeSaasUser } from '../services/saas/onboardingService.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 const REFRESH_COOKIE_OPTIONS = {
@@ -49,6 +50,7 @@ export const register = asyncHandler(async (req, res) => {
   const userData = { ...req.body };
   delete userData.confirmPassword;
   const { user, devVerificationUrl } = await registerUser(userData);
+  await initializeSaasUser(user.id, { referralCode: req.body.referralCode });
 
   res.status(201).json({
     success: true,

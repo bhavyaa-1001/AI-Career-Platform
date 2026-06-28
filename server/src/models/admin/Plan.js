@@ -16,6 +16,10 @@ const planSchema = new mongoose.Schema(
     limits: { type: mongoose.Schema.Types.Mixed, default: {} },
     isActive: { type: Boolean, default: true },
     sortOrder: { type: Number, default: 0 },
+    stripeProductId: { type: String, default: '' },
+    stripePriceId: { type: String, default: '' },
+    trialDays: { type: Number, default: 0 },
+    prioritySupport: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
@@ -34,6 +38,9 @@ planSchema.methods.toSafeObject = function () {
     limits: this.limits,
     isActive: this.isActive,
     sortOrder: this.sortOrder,
+    stripePriceId: this.stripePriceId || null,
+    trialDays: this.trialDays,
+    prioritySupport: this.prioritySupport,
     createdAt: this.createdAt,
   };
 };

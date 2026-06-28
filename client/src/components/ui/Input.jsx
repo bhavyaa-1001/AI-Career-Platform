@@ -15,6 +15,8 @@ export const Input = forwardRef(function Input({ className, label, error, id, ..
       <input
         ref={ref}
         id={inputId}
+        aria-invalid={error ? 'true' : undefined}
+        aria-describedby={error ? `${inputId}-error` : undefined}
         className={cn(
           'flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm',
           'placeholder:text-muted-foreground',
@@ -25,7 +27,11 @@ export const Input = forwardRef(function Input({ className, label, error, id, ..
         )}
         {...props}
       />
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && (
+        <p id={`${inputId}-error`} className="text-xs text-destructive" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 });
