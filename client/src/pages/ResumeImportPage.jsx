@@ -17,7 +17,13 @@ export function ResumeImportPage() {
   const [title, setTitle] = useState('');
   const [error, setError] = useState(null);
 
-  const handleUpload = async (file) => {
+  const handleUpload = async (file, clientError) => {
+    if (clientError) {
+      setError(clientError);
+      return;
+    }
+    if (!file) return;
+
     setError(null);
     try {
       const res = await parseImport.mutateAsync(file);

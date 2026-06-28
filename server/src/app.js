@@ -24,7 +24,15 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization'],
   }),
 );
-app.use(compression());
+app.use(
+  compression({
+    filter: (req, res) => {
+      const type = res.getHeader('Content-Type');
+      if (type === 'application/pdf') return false;
+      return compression.filter(req, res);
+    },
+  }),
+);
 app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));

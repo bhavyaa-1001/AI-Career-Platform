@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test Resume</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Merriweather:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+  @page { size: letter; margin: 0.45in; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #fff; color: #1a1a1a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .resume-section { page-break-inside: avoid; break-inside: avoid-page; margin-bottom: 16px; }
+  .resume-entry { page-break-inside: avoid; break-inside: avoid-page; margin-bottom: 10px; }
+  h1, h2 { page-break-after: avoid; break-after: avoid-page; }
+  p, li { orphans: 3; widows: 3; }
+  .resume-template--modern { display: flex; min-height: 100%; }
+  .resume-main { flex: 1; padding: 32px 28px; }
+  .resume-sidebar { width: 34%; padding: 32px 20px; font-size: 0.92em; color: #fff; }
+  .resume-grid { display: grid; grid-template-columns: 1fr 280px; gap: 28px; }
+  .resume-creative-header { margin-bottom: 24px; padding: 32px 36px; }
+  .resume-body { padding: 0 36px 36px; }
+</style>
+</head>
+<body><article class="resume-template resume-template--modern" style="font-family:Inter,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.55;color:#1a1a1a;display:flex;flex-direction:row">
+      <div class="resume-main"><header style="margin-bottom:20px">
+    <h1 style="font-size:1.75em;font-weight:700;margin:0;color:#2563eb">John Doe</h1>
+    <p style="margin:6px 0 0;color:#555">Engineer</p>
+    <p style="margin:8px 0 0;font-size:0.9em;color:#666">john@test.com · 123 · NYC</p>
+  </header><section class="resume-section"><h2 style="display:none">Professional Summary</h2><h2 style="border-bottom:2px solid #2563eb;padding-bottom:4px;margin:0 0 12px;font-size:1em;font-weight:700">Professional Summary</h2><p style="margin:0;white-space:pre-wrap">Experienced developer.</p></section><section class="resume-section"><h2 style="display:none">Experience</h2><h2 style="border-bottom:2px solid #2563eb;padding-bottom:4px;margin:0 0 12px;font-size:1em;font-weight:700">Experience</h2><article class="resume-entry"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px"><strong>Dev — Acme</strong><span style="color:#666;font-size:0.9em">2020 – 2024</span></div><p style="margin:4px 0 0;white-space:pre-wrap">Built apps.</p></article></section></div>
+      <aside class="resume-sidebar" style="background:#2563eb"><section class="resume-section"><h2 style="display:none">Skills</h2><h2 style="border-bottom:2px solid #fff;padding-bottom:4px;margin:0 0 12px;font-size:1em;font-weight:700;color:#fff">Skills</h2><p style="margin:0">JS (Expert)</p></section></aside>
+    </article></body>
+</html>

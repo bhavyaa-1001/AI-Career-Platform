@@ -23,11 +23,12 @@ const resumeFilter = (_req, file, cb) => {
   const allowed = [
     'application/pdf',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/octet-stream',
   ];
-  const ext = file.originalname?.toLowerCase().split('.').pop();
-  const byExt = ext === 'pdf' || ext === 'docx';
+  const name = file.originalname?.toLowerCase() || '';
+  const byExt = name.endsWith('.pdf') || name.endsWith('.docx');
 
-  if (allowed.includes(file.mimetype) || byExt) {
+  if (byExt || allowed.includes(file.mimetype)) {
     cb(null, true);
   } else {
     cb(new ApiError(400, 'Only PDF and DOCX files are allowed'), false);

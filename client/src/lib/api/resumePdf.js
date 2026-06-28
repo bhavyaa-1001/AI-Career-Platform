@@ -34,7 +34,17 @@ export const downloadResumePdf = async (id, override = null) => {
         headers: { Authorization: token ? `Bearer ${token}` : '' },
       });
 
-  if (response.data.type === 'application/json') {
+  const contentType = response.headers['content-type'] || response.data.type || '';
+  if (contentType.includes('application/json') || response.data.type === 'application/json') {
+    throw new Error(await parseBlobError(response.data));
+  }
+
+  if (response.data.size < 1000) {
+    throw new Error('PDF download failed: received an empty file');
+  }
+
+  const header = await response.data.slice(0, 4).text();
+  if (!header.startsWith('%PDF')) {
     throw new Error(await parseBlobError(response.data));
   }
 
@@ -42,11 +52,17 @@ export const downloadResumePdf = async (id, override = null) => {
   const match = disposition.match(/filename="?([^";\n]+)"?/);
   const filename = match ? decodeURIComponent(match[1]) : 'resume.pdf';
 
-  return { blob: response.data, filename };
+  const blob =
+    response.data.type === 'application/pdf'
+      ? response.data
+      : new Blob([response.data], { type: 'application/pdf' });
+
+  return { blob, filename };
 };
 
 export const triggerPdfDownload = ({ blob, filename }) => {
-  const url = URL.createObjectURL(blob);
+  const pdfBlob = blob.type === 'application/pdf' ? blob : new Blob([blob], { type: 'application/pdf' });
+  const url = URL.createObjectURL(pdfBlob);
   const link = document.createElement('a');
   link.href = url;
   link.download = filename;

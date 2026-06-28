@@ -13,6 +13,7 @@ export function ResumeUploadZone({ onUpload, loading, error }) {
     if (!file) return;
     const name = file.name.toLowerCase();
     if (!name.endsWith('.pdf') && !name.endsWith('.docx')) {
+      onUpload(null, 'Please upload a PDF or DOCX file.');
       return;
     }
     onUpload(file);

@@ -1,12 +1,9 @@
 import crypto from 'crypto';
-import { createRequire } from 'module';
 
 import mammoth from 'mammoth';
+import { PDFParse } from 'pdf-parse';
 
 import { ApiError } from '../utils/ApiError.js';
-
-const require = createRequire(import.meta.url);
-const pdfParse = require('pdf-parse');
 
 const SECTION_HEADERS = [
   { key: 'summary', patterns: [/^(professional\s*)?summary$/i, /^profile$/i, /^objective$/i, /^about(\s*me)?$/i] },
@@ -37,11 +34,34 @@ const normalizeText = (text) =>
 const withId = (item) => ({ ...item, id: crypto.randomUUID() });
 
 export const extractTextFromPdf = async (buffer) => {
+  if (!buffer?.length) {
+    throw new ApiError(400, 'Uploaded PDF file is empty');
+  }
+
+  let parser;
   try {
-    const data = await pdfParse(buffer);
-    return normalizeText(data.text || '');
-  } catch {
-    throw new ApiError(422, 'Unable to extract text from PDF. The file may be scanned or encrypted.');
+    parser = new PDFParse({ data: buffer });
+    const result = await parser.getText();
+    const text = normalizeText(result.text || '');
+
+    if (text.length < 20) {
+      throw new ApiError(
+        422,
+        'Could not extract enough text from this PDF. Try a text-based PDF export or upload a DOCX file instead.',
+      );
+    }
+
+    return text;
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    throw new ApiError(
+      422,
+      'Unable to read this PDF. Try uploading DOCX or re-export your resume as a text-based PDF.',
+    );
+  } finally {
+    if (parser) {
+      await parser.destroy().catch(() => {});
+    }
   }
 };
 

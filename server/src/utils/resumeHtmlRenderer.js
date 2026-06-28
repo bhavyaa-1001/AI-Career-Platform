@@ -114,16 +114,15 @@ const splitSections = (orderedIds, sidebarIds) => ({
 });
 
 const PDF_STYLES = `
-  @page { size: letter; margin: 0.45in; }
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: #fff; color: #1a1a1a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { margin: 0; padding: 0; width: 100%; height: auto; min-height: auto; background: #fff; color: #1a1a1a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .resume-section { page-break-inside: avoid; break-inside: avoid-page; margin-bottom: 16px; }
   .resume-entry { page-break-inside: avoid; break-inside: avoid-page; margin-bottom: 10px; }
   h1, h2 { page-break-after: avoid; break-after: avoid-page; }
   p, li { orphans: 3; widows: 3; }
-  .resume-template--modern { display: flex; min-height: 100%; }
-  .resume-main { flex: 1; padding: 32px 28px; }
-  .resume-sidebar { width: 34%; padding: 32px 20px; font-size: 0.92em; color: #fff; }
+  .resume-template--modern { display: flex; flex-direction: row; align-items: stretch; width: 100%; min-height: auto; }
+  .resume-main { flex: 1 1 auto; min-width: 0; padding: 32px 28px; }
+  .resume-sidebar { flex: 0 0 34%; width: 34%; padding: 32px 20px; font-size: 0.92em; color: #fff; }
   .resume-grid { display: grid; grid-template-columns: 1fr 280px; gap: 28px; }
   .resume-creative-header { margin-bottom: 24px; padding: 32px 36px; }
   .resume-body { padding: 0 36px 36px; }
@@ -193,8 +192,6 @@ export const renderResumeHtml = (resume) => {
 <head>
   <meta charset="UTF-8" />
   <title>${title}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Merriweather:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
   <style>${PDF_STYLES}</style>
 </head>
 <body>${body}</body>

@@ -49,7 +49,11 @@ export const errorHandler = (err, req, res, _next) => {
       method: req.method,
     });
   } else {
-    logger.warn(`${statusCode} — ${message}`, { url: req.originalUrl, method: req.method });
+    logger.warn(`${statusCode} — ${message}`, {
+      url: req.originalUrl,
+      method: req.method,
+      ...(errors.length > 0 && { errors }),
+    });
   }
 
   res.status(statusCode).json({

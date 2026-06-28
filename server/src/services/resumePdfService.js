@@ -17,20 +17,49 @@ const getBrowser = async () => {
   return browserInstance;
 };
 
+const toPlainObject = (value) => {
+  if (!value || typeof value !== 'object') return value;
+  if (typeof value.toObject === 'function') return value.toObject();
+  return value;
+};
+
 export const generatePdfBuffer = async (html) => {
+  if (!html || html.length < 100) {
+    throw new ApiError(500, 'PDF generation failed: resume HTML is empty');
+  }
+
   let page;
   try {
     const browser = await getBrowser();
     page = await browser.newPage();
-    await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 });
+    await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1 });
+    await page.setContent(html, { waitUntil: 'load', timeout: 30000 });
+    await page.evaluate(async () => {
+      if (document.fonts?.ready) await document.fonts.ready;
+    });
+
+    const hasVisibleText = await page.evaluate(() => {
+      const text = document.body?.innerText?.replace(/\s+/g, ' ').trim() || '';
+      return text.length > 0;
+    });
+    if (!hasVisibleText) {
+      throw new ApiError(500, 'PDF generation failed: resume has no visible content');
+    }
+
     const pdf = await page.pdf({
       format: 'Letter',
       printBackground: true,
-      preferCSSPageSize: true,
       margin: { top: '0.45in', right: '0.45in', bottom: '0.45in', left: '0.45in' },
     });
-    return pdf;
+
+    const buffer = Buffer.from(pdf);
+    if (buffer.length < 1000) {
+      throw new ApiError(500, 'PDF generation failed: output file is empty');
+    }
+
+    return buffer;
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     throw new ApiError(500, `PDF generation failed: ${err.message || 'Unknown error'}`);
   } finally {
     if (page) await page.close().catch(() => {});
@@ -39,22 +68,28 @@ export const generatePdfBuffer = async (html) => {
 
 const mergeResumeData = (saved, override) => {
   if (!override) return saved;
+
+  const savedSettings = toPlainObject(saved.settings) || {};
+  const overrideSettings = toPlainObject(override.settings) || {};
+  const savedContent = toPlainObject(saved.content) || {};
+  const overrideContent = toPlainObject(override.content) || {};
+
   return {
     ...saved,
     title: override.title ?? saved.title,
     template: override.template ?? saved.template,
-    settings: { ...saved.settings, ...override.settings },
+    settings: { ...savedSettings, ...overrideSettings },
     sectionOrder: override.sectionOrder ?? saved.sectionOrder,
     sectionVisibility: { ...saved.sectionVisibility, ...override.sectionVisibility },
     content: override.content
       ? {
-          ...saved.content,
-          ...override.content,
-          personalInfo: { ...saved.content.personalInfo, ...override.content.personalInfo },
-          summary: { ...saved.content.summary, ...override.content.summary },
-          socialLinks: { ...saved.content.socialLinks, ...override.content.socialLinks },
+          ...savedContent,
+          ...overrideContent,
+          personalInfo: { ...savedContent.personalInfo, ...overrideContent.personalInfo },
+          summary: { ...savedContent.summary, ...overrideContent.summary },
+          socialLinks: { ...savedContent.socialLinks, ...overrideContent.socialLinks },
         }
-      : saved.content,
+      : savedContent,
   };
 };
 

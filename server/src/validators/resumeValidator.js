@@ -1,6 +1,10 @@
 import { z } from 'zod';
 
-const optionalUrl = z.string().url().or(z.literal('')).optional();
+const optionalUrl = z.union([
+  z.string().url(),
+  z.literal(''),
+  z.string().max(500),
+]).optional();
 
 const personalInfoSchema = z.object({
   fullName: z.string().max(100).optional(),
