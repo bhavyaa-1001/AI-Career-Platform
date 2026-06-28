@@ -98,3 +98,60 @@
     color: var(--color-success);
   }
 }
+
+/* Resume templates — print, PDF, responsive */
+@media print {
+  .resume-preview-chrome,
+  .resume-preview-frame {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .resume-page {
+    max-width: 100% !important;
+    aspect-ratio: auto !important;
+    overflow: visible !important;
+  }
+
+  .resume-template {
+    break-inside: avoid;
+  }
+
+  .resume-sidebar,
+  .resume-creative-header {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .resume-section,
+  .resume-entry {
+    page-break-inside: avoid;
+    break-inside: avoid-page;
+  }
+
+  h1, h2 {
+    page-break-after: avoid;
+    break-after: avoid-page;
+  }
+}
+
+@media (max-width: 640px) {
+  .resume-template--modern,
+  .resume-template--developer {
+    flex-direction: column !important;
+  }
+
+  .resume-template--modern .resume-sidebar,
+  .resume-template--developer .resume-grid {
+    width: 100% !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .resume-template--minimal {
+    padding: 24px !important;
+  }
+
+  .resume-template--corporate {
+    padding: 24px !important;
+  }
+}

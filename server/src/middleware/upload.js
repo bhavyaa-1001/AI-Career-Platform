@@ -19,10 +19,32 @@ export const uploadAvatar = multer({
   fileFilter: imageFilter,
 });
 
+const resumeFilter = (_req, file, cb) => {
+  const allowed = [
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ];
+  const ext = file.originalname?.toLowerCase().split('.').pop();
+  const byExt = ext === 'pdf' || ext === 'docx';
+
+  if (allowed.includes(file.mimetype) || byExt) {
+    cb(null, true);
+  } else {
+    cb(new ApiError(400, 'Only PDF and DOCX files are allowed'), false);
+  }
+};
+
+export const uploadResume = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: resumeFilter,
+});
+
 export const handleMulterError = (err, _req, _res, next) => {
   if (err instanceof multer.MulterError) {
     if (err.code === 'LIMIT_FILE_SIZE') {
-      return next(new ApiError(400, 'File size must not exceed 5MB'));
+      const max = _req?.originalUrl?.includes('/import/') ? '10MB' : '5MB';
+      return next(new ApiError(400, `File size must not exceed ${max}`));
     }
     return next(new ApiError(400, err.message));
   }

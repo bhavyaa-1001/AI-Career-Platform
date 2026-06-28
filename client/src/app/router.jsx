@@ -13,6 +13,9 @@ import { HomePage } from '@/pages/HomePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { ProfilePage } from '@/pages/ProfilePage';
 import { ProfilePreviewPage } from '@/pages/ProfilePreviewPage';
+import { ResumeBuilderPage } from '@/pages/ResumeBuilderPage';
+import { ResumeDashboardPage } from '@/pages/ResumeDashboardPage';
+import { ResumeImportPage } from '@/pages/ResumeImportPage';
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +36,9 @@ export const router = createBrowserRouter([
       { path: 'dashboard', element: <DashboardPage /> },
       { path: 'profile', element: <ProfilePage /> },
       { path: 'profile/preview', element: <ProfilePreviewPage /> },
+      { path: 'resumes', element: <ResumeDashboardPage /> },
+      { path: 'resumes/import', element: <ResumeImportPage /> },
+      { path: 'resumes/:id', element: <ResumeBuilderPage /> },
       { path: 'admin', element: <ProtectedRoute roles={['admin']}><AdminPage /></ProtectedRoute> },
     ],
   },

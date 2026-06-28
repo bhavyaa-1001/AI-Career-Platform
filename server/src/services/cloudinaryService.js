@@ -26,3 +26,32 @@ export const deleteAvatar = async (publicId) => {
   if (!isCloudinaryConfigured || !publicId) return;
   await cloudinary.uploader.destroy(publicId);
 };
+
+export const uploadResumeFile = async (fileBuffer, { fileName, mimeType, folder = 'resumes' }) => {
+  if (!isCloudinaryConfigured) {
+    return { url: null, publicId: null, skipped: true };
+  }
+
+  const isPdf = mimeType === 'application/pdf' || fileName?.toLowerCase().endsWith('.pdf');
+
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        resource_type: 'raw',
+        format: isPdf ? 'pdf' : undefined,
+        public_id: fileName?.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9-_]/g, '_').slice(0, 80),
+      },
+      (error, result) => {
+        if (error) reject(new ApiError(500, 'Failed to upload resume file'));
+        else resolve({ url: result.secure_url, publicId: result.public_id, skipped: false });
+      },
+    );
+    stream.end(fileBuffer);
+  });
+};
+
+export const deleteResumeFile = async (publicId) => {
+  if (!isCloudinaryConfigured || !publicId) return;
+  await cloudinary.uploader.destroy(publicId, { resource_type: 'raw' });
+};

@@ -9,6 +9,8 @@ const PAGE_TITLES = {
   '/dashboard': 'Dashboard',
   '/profile': 'Profile',
   '/profile/preview': 'Profile Preview',
+  '/resumes': 'Resume Builder',
+  '/resumes/import': 'Import Resume',
   '/admin': 'Admin Panel',
 };
 
@@ -17,7 +19,7 @@ export function DashboardLayout() {
   const { pathname } = useLocation();
   const { data } = useDashboard();
   const completion = data?.data?.stats?.profileCompletion || 0;
-  const title = PAGE_TITLES[pathname] || 'Dashboard';
+  const title = PAGE_TITLES[pathname] || (pathname.startsWith('/resumes/') ? 'Edit Resume' : 'Dashboard');
 
   return (
     <div className="flex min-h-screen bg-background">
