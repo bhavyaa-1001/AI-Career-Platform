@@ -60,6 +60,19 @@ const userSchema = new mongoose.Schema(
       type: Date,
       select: false,
     },
+    emailOtpHash: {
+      type: String,
+      select: false,
+    },
+    emailOtpExpires: {
+      type: Date,
+      select: false,
+    },
+    emailOtpAttempts: {
+      type: Number,
+      default: 0,
+      select: false,
+    },
     passwordResetToken: {
       type: String,
       select: false,
@@ -89,6 +102,9 @@ const userSchema = new mongoose.Schema(
         delete ret.password;
         delete ret.emailVerificationToken;
         delete ret.emailVerificationExpires;
+        delete ret.emailOtpHash;
+        delete ret.emailOtpExpires;
+        delete ret.emailOtpAttempts;
         delete ret.passwordResetToken;
         delete ret.passwordResetExpires;
         delete ret.refreshTokens;

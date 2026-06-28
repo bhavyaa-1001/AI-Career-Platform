@@ -39,9 +39,28 @@ const sendEmail = async ({ to, subject, html }) => {
     logger.info(`Email sent to ${to}: ${subject}`);
   } catch (error) {
     logger.error(`Failed to send email to ${to}: ${error.message}`);
-    if (env.NODE_ENV === 'production') {
-      throw new ApiError(500, 'Failed to send email. Please try again later.');
-    }
+    throw new ApiError(500, 'Failed to send email. Please try again later.');
+  }
+};
+
+export const sendSignupOtpEmail = async (email, firstName, otp) => {
+  await sendEmail({
+    to: email,
+    subject: 'Your signup verification code — AI Career Platform',
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Welcome, ${firstName}!</h2>
+        <p>Enter this verification code to complete your signup:</p>
+        <p style="font-size: 32px; font-weight: bold; letter-spacing: 8px; margin: 24px 0;">${otp}</p>
+        <p style="color: #71717a; font-size: 14px;">
+          This code expires in 10 minutes. If you didn't create an account, ignore this email.
+        </p>
+      </div>
+    `,
+  });
+
+  if (!isEmailConfigured) {
+    logger.info(`[Dev] Signup OTP for ${email}: ${otp}`);
   }
 };
 

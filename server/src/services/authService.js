@@ -1,12 +1,12 @@
 import bcrypt from 'bcryptjs';
 
-import { env } from '../config/env.js';
+import { isEmailConfigured } from '../config/env.js';
 import { User } from '../models/User.js';
 import { ApiError } from '../utils/ApiError.js';
-import { generateSecureToken, hashToken } from '../utils/crypto.js';
+import { generateOtp, generateSecureToken, hashToken } from '../utils/crypto.js';
 
 import { deleteAvatar, uploadAvatar } from './cloudinaryService.js';
-import { sendPasswordResetEmail, sendVerificationEmail } from './emailService.js';
+import { sendPasswordResetEmail, sendSignupOtpEmail } from './emailService.js';
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -26,31 +26,122 @@ const cleanExpiredRefreshTokens = (user) => {
   user.refreshTokens = user.refreshTokens.filter((rt) => rt.expiresAt > now);
 };
 
+const OTP_EXPIRY_MS = 10 * 60 * 1000;
+const MAX_OTP_ATTEMPTS = 5;
+
+const issueSignupOtp = async (user) => {
+  const otp = generateOtp();
+  user.emailOtpHash = hashToken(otp);
+  user.emailOtpExpires = new Date(Date.now() + OTP_EXPIRY_MS);
+  user.emailOtpAttempts = 0;
+  await user.save();
+  await sendSignupOtpEmail(user.email, user.firstName, otp);
+  return isEmailConfigured ? undefined : otp;
+};
+
 export const registerUser = async ({ firstName, lastName, email, password, role }) => {
-  const existing = await User.findOne({ email });
+  const normalizedEmail = email.toLowerCase().trim();
+  const existing = await User.findOne({ email: normalizedEmail });
   if (existing) {
+    if (!existing.isEmailVerified) {
+      throw new ApiError(
+        409,
+        'An account with this email exists but is not verified. Please verify with OTP or request a new code.',
+        [],
+        'EMAIL_NOT_VERIFIED',
+      );
+    }
     throw new ApiError(409, 'An account with this email already exists');
   }
 
-  const verificationToken = generateSecureToken();
   const hashedPassword = await hashPassword(password);
 
   const user = await User.create({
     firstName,
     lastName,
-    email,
+    email: normalizedEmail,
     password: hashedPassword,
     role,
-    emailVerificationToken: hashToken(verificationToken),
-    emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    isEmailVerified: false,
   });
 
-  const verifyUrl = await sendVerificationEmail(email, firstName, verificationToken);
+  const devOtp = await issueSignupOtp(user);
 
   return {
     user: user.toSafeObject(),
-    devVerificationUrl: env.NODE_ENV === 'development' ? verifyUrl : undefined,
+    requiresVerification: true,
+    devOtp,
   };
+};
+
+export const verifySignupOtp = async ({ email, otp }) => {
+  const normalizedEmail = email.toLowerCase().trim();
+  const user = await User.findOne({ email: normalizedEmail }).select(
+    '+emailOtpHash +emailOtpExpires +emailOtpAttempts +refreshTokens',
+  );
+
+  if (!user) {
+    throw new ApiError(404, 'No pending signup found for this email');
+  }
+  if (user.isEmailVerified) {
+    throw new ApiError(400, 'Email is already verified. You can sign in.');
+  }
+  if (!user.emailOtpHash || !user.emailOtpExpires) {
+    throw new ApiError(400, 'No active verification code. Please request a new OTP.');
+  }
+  if (user.emailOtpExpires < new Date()) {
+    throw new ApiError(400, 'Verification code expired. Please request a new OTP.', [], 'OTP_EXPIRED');
+  }
+  if (user.emailOtpAttempts >= MAX_OTP_ATTEMPTS) {
+    throw new ApiError(429, 'Too many failed attempts. Please request a new OTP.', [], 'OTP_LOCKED');
+  }
+
+  const normalizedOtp = String(otp).trim();
+  if (hashToken(normalizedOtp) !== user.emailOtpHash) {
+    user.emailOtpAttempts += 1;
+    await user.save();
+    throw new ApiError(400, 'Invalid verification code');
+  }
+
+  user.isEmailVerified = true;
+  user.emailOtpHash = undefined;
+  user.emailOtpExpires = undefined;
+  user.emailOtpAttempts = 0;
+  user.emailVerificationToken = undefined;
+  user.emailVerificationExpires = undefined;
+
+  cleanExpiredRefreshTokens(user);
+  const refreshToken = generateRefreshToken(user._id, false);
+  user.refreshTokens.push({
+    token: hashToken(refreshToken),
+    expiresAt: getRefreshTokenExpiry(false),
+    rememberMe: false,
+  });
+  await user.save();
+
+  const accessToken = generateAccessToken(user._id, user.role);
+
+  return {
+    user: user.toSafeObject(),
+    accessToken,
+    refreshToken,
+    rememberMe: false,
+  };
+};
+
+export const resendSignupOtp = async (email) => {
+  const normalizedEmail = email.toLowerCase().trim();
+  const user = await User.findOne({ email: normalizedEmail }).select('+emailOtpHash +emailOtpExpires +emailOtpAttempts');
+
+  if (!user) {
+    throw new ApiError(404, 'No account found for this email');
+  }
+  if (user.isEmailVerified) {
+    throw new ApiError(400, 'Email is already verified');
+  }
+
+  const devOtp = await issueSignupOtp(user);
+  return { devOtp };
 };
 
 export const loginUser = async ({ email, password, rememberMe }) => {
@@ -63,6 +154,15 @@ export const loginUser = async ({ email, password, rememberMe }) => {
   const isMatch = await comparePassword(password, user.password);
   if (!isMatch) {
     throw new ApiError(401, 'Invalid email or password');
+  }
+
+  if (!user.isEmailVerified) {
+    throw new ApiError(
+      403,
+      'Email not verified. Enter the OTP sent to your email to complete signup.',
+      [],
+      'EMAIL_NOT_VERIFIED',
+    );
   }
 
   user.lastLogin = new Date();
@@ -170,14 +270,8 @@ export const resendVerificationEmail = async (userId) => {
   if (!user) throw new ApiError(404, 'User not found');
   if (user.isEmailVerified) throw new ApiError(400, 'Email is already verified');
 
-  const verificationToken = generateSecureToken();
-  user.emailVerificationToken = hashToken(verificationToken);
-  user.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  await user.save();
-
-  const verifyUrl = await sendVerificationEmail(user.email, user.firstName, verificationToken);
-
-  return env.NODE_ENV === 'development' ? verifyUrl : undefined;
+  const devOtp = await issueSignupOtp(user);
+  return devOtp;
 };
 
 export const forgotPassword = async (email) => {

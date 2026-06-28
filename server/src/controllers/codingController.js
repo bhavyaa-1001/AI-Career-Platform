@@ -1,4 +1,4 @@
-import { isGeminiConfigured, isJudge0Configured } from '../config/env.js';
+import { getCodeExecutionProvider, isCodeExecutionConfigured, isGeminiConfigured, isJudge0Configured, isOnlineCompilerConfigured } from '../config/env.js';
 import {
   createCodeReview, getHintSession, listCodeReviews, requestDryRun,
   requestHint, requestVisualExplanation,
@@ -27,6 +27,9 @@ export const codingStatusHandler = asyncHandler(async (_req, res) => {
   res.json({
     success: true,
     data: {
+      codeExecutionConfigured: isCodeExecutionConfigured,
+      codeExecutionProvider: getCodeExecutionProvider(),
+      onlineCompilerConfigured: isOnlineCompilerConfigured,
       judge0Configured: isJudge0Configured,
       geminiConfigured: isGeminiConfigured,
     },

@@ -17,6 +17,17 @@ export const JUDGE0_LANGUAGE_IDS = {
   csharp: 51,
 };
 
+/** OnlineCompiler.io compiler identifiers — https://onlinecompiler.io/docs */
+export const ONLINE_COMPILER_LANGUAGE_IDS = {
+  cpp: 'g++-15',
+  java: 'openjdk-25',
+  python: 'python-3.14',
+  javascript: 'typescript-deno',
+  go: 'go-1.26',
+  rust: 'rust-1.93',
+  csharp: 'dotnet-csharp-9',
+};
+
 export const SUBMISSION_STATUSES = [
   'accepted', 'wrong_answer', 'time_limit_exceeded', 'memory_limit_exceeded',
   'runtime_error', 'compilation_error', 'pending', 'running',
@@ -35,7 +46,7 @@ export const DEFAULT_STARTER_CODE = {
   cpp: '#include <iostream>\nusing namespace std;\n\nint main() {\n  // Read input and print output\n  return 0;\n}\n',
   java: 'import java.util.*;\n\npublic class Main {\n  public static void main(String[] args) {\n    Scanner sc = new Scanner(System.in);\n    // Read input and print output\n  }\n}\n',
   python: 'import sys\n\ndef solve():\n    data = sys.stdin.read().strip().split()\n    # Process input and print result\n\nif __name__ == "__main__":\n    solve()\n',
-  javascript: "const fs = require('fs');\nconst input = fs.readFileSync(0, 'utf8').trim();\n// Process input and print result\n",
+  javascript: "const input = await new Response(Deno.stdin.readable).text();\n// Process input and print result\n",
   go: 'package main\n\nimport (\n\t"bufio"\n\t"fmt"\n\t"os"\n)\n\nfunc main() {\n\treader := bufio.NewReader(os.Stdin)\n\t_ = reader\n\t// Process input and print result\n}\n',
   rust: 'use std::io::{self, Read};\n\nfn main() {\n    let mut input = String::new();\n    io::stdin().read_to_string(&mut input).unwrap();\n    // Process input and print result\n}\n',
   csharp: 'using System;\n\nclass Program {\n  static void Main() {\n    // Read input and print output\n  }\n}\n',

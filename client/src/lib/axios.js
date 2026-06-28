@@ -45,6 +45,7 @@ api.interceptors.response.use(
     const originalRequest = error.config;
     const status = error.response?.status;
     const message = error.response?.data?.message || error.message || 'Something went wrong';
+    const code = error.response?.data?.code;
 
     if (
       status === 401 &&
@@ -91,7 +92,7 @@ api.interceptors.response.use(
       }
     }
 
-    return Promise.reject(new Error(message));
+    return Promise.reject(Object.assign(new Error(message), { code }));
   },
 );
 

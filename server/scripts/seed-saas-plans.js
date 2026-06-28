@@ -3,10 +3,11 @@ import 'dotenv/config';
 import mongoose from 'mongoose';
 
 import { SAAS_PLANS } from '../src/config/saasConstants.js';
+import { connectMongoose, srvDnsHelpMessage } from '../src/config/mongoConnect.js';
 import { Plan } from '../src/models/admin/Plan.js';
 
 const seedPlans = async () => {
-  await mongoose.connect(process.env.MONGODB_URI);
+  await connectMongoose(process.env.MONGODB_URI);
   console.log('Connected to MongoDB');
 
   for (const planData of SAAS_PLANS) {
@@ -31,6 +32,9 @@ const seedPlans = async () => {
 };
 
 seedPlans().catch((err) => {
+  if (err.message?.includes('querySrv ECONNREFUSED')) {
+    console.error(srvDnsHelpMessage);
+  }
   console.error(err);
   process.exit(1);
 });

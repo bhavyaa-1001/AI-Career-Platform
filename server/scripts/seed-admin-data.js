@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
 import 'dotenv/config';
 
+import { connectMongoose, srvDnsHelpMessage } from '../src/config/mongoConnect.js';
 import { Plan } from '../src/models/admin/Plan.js';
 import { PlatformSettings } from '../src/models/admin/PlatformSettings.js';
 
@@ -58,7 +58,7 @@ const seedAdminData = async () => {
     process.exit(1);
   }
 
-  await mongoose.connect(uri);
+  await connectMongoose(uri);
 
   for (const plan of DEFAULT_PLANS) {
     const existing = await Plan.findOne({ slug: plan.slug });
@@ -82,6 +82,9 @@ const seedAdminData = async () => {
 };
 
 seedAdminData().catch((err) => {
+  if (err.message?.includes('querySrv ECONNREFUSED')) {
+    console.error(srvDnsHelpMessage);
+  }
   console.error(err);
   process.exit(1);
 });

@@ -17,6 +17,7 @@ export const registerSchema = z.object({
     role: z.enum(['student', 'recruiter'], {
       errorMap: () => ({ message: 'Role must be student or recruiter' }),
     }),
+    referralCode: z.string().trim().max(20).optional(),
   }).refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],
@@ -64,6 +65,20 @@ export const changePasswordSchema = z.object({
 export const verifyEmailSchema = z.object({
   params: z.object({
     token: z.string().min(1, 'Verification token is required'),
+  }),
+});
+
+export const verifySignupOtpSchema = z.object({
+  body: z.object({
+    email: z.string().email('Invalid email address'),
+    otp: z.string().regex(/^\d{6}$/, 'OTP must be a 6-digit code'),
+    referralCode: z.string().trim().max(20).optional(),
+  }),
+});
+
+export const resendSignupOtpSchema = z.object({
+  body: z.object({
+    email: z.string().email('Invalid email address'),
   }),
 });
 

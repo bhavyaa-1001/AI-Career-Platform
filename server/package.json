@@ -15,7 +15,9 @@
     "seed:saas-plans": "node scripts/seed-saas-plans.js",
     "test:saas": "node --test tests/saas.test.js",
     "stripe:listen": "stripe listen --forward-to localhost:5000/api/v1/billing/webhook",
-    "seed:coding": "node scripts/seed-coding-problems.js"
+    "seed:coding": "node scripts/seed-coding-problems.js",
+    "judge0:up": "docker compose -f ../docker-compose.judge0.yml up -d",
+    "judge0:down": "docker compose -f ../docker-compose.judge0.yml down"
   },
   "keywords": [],
   "author": "",

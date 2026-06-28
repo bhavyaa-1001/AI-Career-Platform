@@ -2,12 +2,14 @@
  * Seed sample coding problems for development.
  * Usage: node scripts/seed-coding-problems.js
  */
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
+import mongoose from 'mongoose';
+
 import { DEFAULT_STARTER_CODE } from '../src/config/codingConstants.js';
+import { connectMongoose, srvDnsHelpMessage } from '../src/config/mongoConnect.js';
 import { CodingProblem } from '../src/models/CodingProblem.js';
 
 const SAMPLE_PROBLEMS = [
@@ -81,7 +83,7 @@ const SAMPLE_PROBLEMS = [
 ];
 
 async function seed() {
-  await mongoose.connect(process.env.MONGODB_URI);
+  await connectMongoose(process.env.MONGODB_URI);
   console.log('Connected to MongoDB');
 
   for (const problem of SAMPLE_PROBLEMS) {
@@ -99,6 +101,9 @@ async function seed() {
 }
 
 seed().catch((err) => {
+  if (err.message?.includes('querySrv ECONNREFUSED')) {
+    console.error(srvDnsHelpMessage);
+  }
   console.error(err);
   process.exit(1);
 });

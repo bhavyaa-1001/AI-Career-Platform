@@ -1,3 +1,5 @@
+import { URL } from 'node:url';
+
 import { z } from 'zod';
 
 const envSchema = z.object({
@@ -28,9 +30,17 @@ const envSchema = z.object({
   GEMINI_API_KEY: z.string().optional().transform((v) => v?.trim() || undefined),
   GEMINI_MODEL: z.string().default('gemini-2.5-flash-lite'),
 
-  JUDGE0_API_URL: z.string().url().default('https://ce.judge0.com'),
+  JUDGE0_API_URL: z.string().url().default('http://localhost:2358'),
   JUDGE0_AUTH_TOKEN: z.string().optional().transform((v) => v?.trim() || undefined),
   JUDGE0_RAPIDAPI_KEY: z.string().optional().transform((v) => v?.trim() || undefined),
+  JUDGE0_ALLOW_NO_AUTH: z
+    .enum(['true', 'false'])
+    .optional()
+    .transform((v) => v === 'true'),
+
+  ONLINECOMPILER_API_KEY: z.string().optional().transform((v) => v?.trim() || undefined),
+  ONLINECOMPILER_API_URL: z.string().url().default('https://api.onlinecompiler.io'),
+  CODE_EXECUTION_PROVIDER: z.enum(['auto', 'judge0', 'onlinecompiler']).default('auto'),
 
   STRIPE_SECRET_KEY: z.string().optional().transform((v) => v?.trim() || undefined),
   STRIPE_WEBHOOK_SECRET: z.string().optional().transform((v) => v?.trim() || undefined),
@@ -55,7 +65,36 @@ export const isCloudinaryConfigured = Boolean(
 
 export const isGeminiConfigured = Boolean(env.GEMINI_API_KEY);
 
-export const isJudge0Configured = Boolean(env.JUDGE0_AUTH_TOKEN || env.JUDGE0_RAPIDAPI_KEY);
+const isLocalJudge0Host = (url) => {
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    return host === 'localhost' || host === '127.0.0.1' || host === 'host.docker.internal';
+  } catch {
+    return false;
+  }
+};
+
+export const isJudge0NoAuth = Boolean(env.JUDGE0_ALLOW_NO_AUTH || isLocalJudge0Host(env.JUDGE0_API_URL));
+
+export const isJudge0Configured = Boolean(
+  env.JUDGE0_AUTH_TOKEN || env.JUDGE0_RAPIDAPI_KEY || isJudge0NoAuth,
+);
+
+export const isOnlineCompilerConfigured = Boolean(env.ONLINECOMPILER_API_KEY);
+
+export const isCodeExecutionConfigured = isOnlineCompilerConfigured || isJudge0Configured;
+
+export const getCodeExecutionProvider = () => {
+  if (env.CODE_EXECUTION_PROVIDER === 'onlinecompiler') {
+    return isOnlineCompilerConfigured ? 'onlinecompiler' : null;
+  }
+  if (env.CODE_EXECUTION_PROVIDER === 'judge0') {
+    return isJudge0Configured ? 'judge0' : null;
+  }
+  if (isOnlineCompilerConfigured) return 'onlinecompiler';
+  if (isJudge0Configured) return 'judge0';
+  return null;
+};
 
 export const isStripeConfigured = Boolean(env.STRIPE_SECRET_KEY);
 export const isStripeWebhookConfigured = Boolean(env.STRIPE_SECRET_KEY && env.STRIPE_WEBHOOK_SECRET);

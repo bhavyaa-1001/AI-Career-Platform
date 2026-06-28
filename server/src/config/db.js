@@ -1,14 +1,20 @@
 import mongoose from 'mongoose';
 
 import { logger } from './logger.js';
+import { connectMongoose, srvDnsHelpMessage } from './mongoConnect.js';
 
 export const connectDB = async (uri) => {
   try {
-    const conn = await mongoose.connect(uri);
+    const conn = await connectMongoose(uri);
     logger.info(`MongoDB connected: ${conn.connection.host}`);
     return conn;
   } catch (error) {
     logger.error(`MongoDB connection error: ${error.message}`);
+
+    if (error.message.includes('querySrv ECONNREFUSED')) {
+      logger.error(srvDnsHelpMessage);
+    }
+
     process.exit(1);
   }
 };

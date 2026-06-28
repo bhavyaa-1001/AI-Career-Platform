@@ -2,6 +2,8 @@ import api from '../axios';
 
 export const authApi = {
   register: (data) => api.post('/auth/register', data),
+  verifySignupOtp: (data) => api.post('/auth/verify-signup-otp', data),
+  resendSignupOtp: (email) => api.post('/auth/resend-signup-otp', { email }),
   login: (data) => api.post('/auth/login', data),
   logout: () => api.post('/auth/logout'),
   logoutAll: () => api.post('/auth/logout-all'),

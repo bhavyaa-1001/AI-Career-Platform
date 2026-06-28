@@ -8,11 +8,13 @@ import {
   logoutUser,
   refreshAccessToken,
   registerUser,
+  resendSignupOtp,
   resendVerificationEmail,
   resetPassword,
   updateUserProfile,
   uploadUserAvatar,
   verifyEmail,
+  verifySignupOtp,
 } from '../services/authService.js';
 import { initializeSaasUser } from '../services/saas/onboardingService.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -49,14 +51,28 @@ const sendAuthResponse = (res, statusCode, { user, accessToken, refreshToken, re
 export const register = asyncHandler(async (req, res) => {
   const userData = { ...req.body };
   delete userData.confirmPassword;
-  const { user, devVerificationUrl } = await registerUser(userData);
-  await initializeSaasUser(user.id, { referralCode: req.body.referralCode });
+  const { user, requiresVerification, devOtp } = await registerUser(userData);
 
   res.status(201).json({
     success: true,
-    message: 'Registration successful. Please check your email to verify your account.',
-    data: { user },
-    ...(devVerificationUrl && { devVerificationUrl }),
+    message: 'Account created. Enter the 6-digit OTP sent to your email to activate your account.',
+    data: { user, requiresVerification, email: user.email },
+    ...(devOtp && { devOtp }),
+  });
+});
+
+export const verifySignupOtpHandler = asyncHandler(async (req, res) => {
+  const result = await verifySignupOtp(req.body);
+  await initializeSaasUser(result.user.id, { referralCode: req.body.referralCode });
+  sendAuthResponse(res, 200, result);
+});
+
+export const resendSignupOtpHandler = asyncHandler(async (req, res) => {
+  const { devOtp } = await resendSignupOtp(req.body.email);
+  res.status(200).json({
+    success: true,
+    message: 'A new verification code has been sent to your email.',
+    ...(devOtp && { devOtp }),
   });
 });
 
@@ -102,11 +118,11 @@ export const verifyEmailToken = asyncHandler(async (req, res) => {
 });
 
 export const resendVerification = asyncHandler(async (req, res) => {
-  const devVerificationUrl = await resendVerificationEmail(req.user._id);
+  const devOtp = await resendVerificationEmail(req.user._id);
   res.status(200).json({
     success: true,
-    message: 'Verification email sent',
-    ...(devVerificationUrl && { devVerificationUrl }),
+    message: 'Verification code sent to your email',
+    ...(devOtp && { devOtp }),
   });
 });
 

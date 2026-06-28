@@ -1,5 +1,6 @@
 import {
-  env, isCloudinaryConfigured, isEmailConfigured, isGeminiConfigured, isJudge0Configured,
+  env, getCodeExecutionProvider, isCloudinaryConfigured, isCodeExecutionConfigured,
+  isEmailConfigured, isGeminiConfigured, isJudge0Configured, isOnlineCompilerConfigured,
 } from '../../config/env.js';
 import { assertFullAdmin } from '../../config/roles.js';
 import { PlatformSettings } from '../../models/admin/PlatformSettings.js';
@@ -88,6 +89,9 @@ export const getServiceStatus = () => ({
   email: isEmailConfigured,
   cloudinary: isCloudinaryConfigured,
   gemini: isGeminiConfigured,
+  codeExecution: isCodeExecutionConfigured,
+  codeExecutionProvider: getCodeExecutionProvider(),
+  onlineCompiler: isOnlineCompilerConfigured,
   judge0: isJudge0Configured,
   mongodb: true,
 });

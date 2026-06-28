@@ -3,9 +3,9 @@ import { CodingSubmission } from '../models/CodingSubmission.js';
 import { ProblemBookmark } from '../models/ProblemBookmark.js';
 import { ApiError } from '../utils/ApiError.js';
 
+import { runTestCases } from './codeExecutionService.js';
 import { getProblemDocument, getProblemDocumentBySlug, updateProblemStats } from './codingProblemService.js';
 import { recordSubmissionStats } from './codingProfileService.js';
-import { runTestCases } from './judge0Service.js';
 
 const upsertBookmark = async (userId, problemId, updates) => {
   let bookmark = await ProblemBookmark.findOne({ userId, problemId });

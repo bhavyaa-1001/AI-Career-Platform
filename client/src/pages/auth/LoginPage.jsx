@@ -27,8 +27,13 @@ export function LoginPage() {
       await login(data);
       const from = location.state?.from?.pathname || '/dashboard';
       navigate(from, { replace: true });
-    } catch {
-      // error set in redux
+    } catch (err) {
+      if (err?.code === 'EMAIL_NOT_VERIFIED') {
+        clearError();
+        navigate(`/register?email=${encodeURIComponent(data.email)}`, {
+          state: { needsVerification: true },
+        });
+      }
     }
   };
 
@@ -41,7 +46,7 @@ export function LoginPage() {
             animate={{ opacity: 1, y: 0 }}
             className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
           >
-            {error}
+            {typeof error === 'string' ? error : error?.message}
           </motion.div>
         )}
 

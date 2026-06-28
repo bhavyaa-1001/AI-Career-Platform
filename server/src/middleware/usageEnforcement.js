@@ -1,7 +1,8 @@
-import { authenticate } from './auth.js';
 import { assertUsageLimit, incrementUsage } from '../services/saas/usageService.js';
 import { ApiError } from '../utils/ApiError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+
+import { authenticate } from './auth.js';
 
 const DEFAULT_ENFORCE_METHODS = ['POST'];
 

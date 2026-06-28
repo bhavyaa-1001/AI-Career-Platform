@@ -9,11 +9,13 @@ import {
   logoutAll,
   refreshToken,
   register,
+  resendSignupOtpHandler,
   resendVerification,
   resetPasswordHandler,
   updateProfile,
   uploadAvatar,
   verifyEmailToken,
+  verifySignupOtpHandler,
 } from '../../controllers/authController.js';
 import { authenticate, optionalAuth } from '../../middleware/auth.js';
 import { authLimiter } from '../../middleware/rateLimiter.js';
@@ -25,8 +27,10 @@ import {
   loginSchema,
   registerSchema,
   resetPasswordSchema,
+  resendSignupOtpSchema,
   updateProfileSchema,
   verifyEmailSchema,
+  verifySignupOtpSchema,
 } from '../../validators/authValidator.js';
 
 const router = Router();
@@ -34,6 +38,8 @@ const router = Router();
 router.use(authLimiter);
 
 router.post('/register', validate(registerSchema), register);
+router.post('/verify-signup-otp', validate(verifySignupOtpSchema), verifySignupOtpHandler);
+router.post('/resend-signup-otp', validate(resendSignupOtpSchema), resendSignupOtpHandler);
 router.post('/login', validate(loginSchema), login);
 router.post('/refresh-token', refreshToken);
 router.post('/logout', optionalAuth, logout);

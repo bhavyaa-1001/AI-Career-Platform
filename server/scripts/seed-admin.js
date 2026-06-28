@@ -1,7 +1,8 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
 import 'dotenv/config';
 
+import bcrypt from 'bcryptjs';
+
+import { connectMongoose, srvDnsHelpMessage } from '../src/config/mongoConnect.js';
 import { User } from '../src/models/User.js';
 
 const seedAdmin = async () => {
@@ -14,7 +15,7 @@ const seedAdmin = async () => {
     process.exit(1);
   }
 
-  await mongoose.connect(uri);
+  await connectMongoose(uri);
 
   const existing = await User.findOne({ email });
   if (existing) {
@@ -39,6 +40,9 @@ const seedAdmin = async () => {
 };
 
 seedAdmin().catch((err) => {
+  if (err.message?.includes('querySrv ECONNREFUSED')) {
+    console.error(srvDnsHelpMessage);
+  }
   console.error(err);
   process.exit(1);
 });
