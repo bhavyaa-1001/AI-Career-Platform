@@ -1,6 +1,7 @@
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
 
 export function AdminPage() {
@@ -14,20 +15,33 @@ export function AdminPage() {
           <Badge variant="destructive">Admin Only</Badge>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Role-Based Access Control</CardTitle>
-            <CardDescription>
-              This page is only accessible to users with the admin role.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Welcome, {user?.firstName}. User management and platform administration features
-              will be added in future milestones.
-            </p>
-          </CardContent>
-        </Card>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Coding Problems</CardTitle>
+              <CardDescription>Create, edit, and publish coding challenges</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/admin/coding/problems">
+                <Button>Manage Problems</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Platform Administration</CardTitle>
+              <CardDescription>
+                Welcome, {user?.firstName}. Additional admin features coming soon.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                User management and platform settings will be added in future milestones.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </motion.div>
     </div>
   );

@@ -10,7 +10,12 @@ const activitySchema = new mongoose.Schema(
     },
     action: {
       type: String,
-      enum: ['profile_update', 'profile_draft', 'profile_publish', 'avatar_upload', 'login', 'register'],
+      enum: [
+        'profile_update', 'profile_draft', 'profile_publish', 'avatar_upload',
+        'login', 'register', 'resume_analysis',
+        'company_created', 'company_updated', 'job_posted', 'job_updated',
+        'application_received', 'application_reviewed',
+      ],
       required: true,
     },
     description: { type: String, required: true, trim: true, maxlength: 300 },

@@ -4,10 +4,11 @@ import { dashboardApi } from '@/lib/api/dashboard';
 
 export const DASHBOARD_QUERY_KEY = ['dashboard'];
 
-export function useDashboard() {
+export function useDashboard(options = {}) {
   return useQuery({
     queryKey: DASHBOARD_QUERY_KEY,
     queryFn: dashboardApi.getDashboard,
     staleTime: 1000 * 60 * 2,
+    ...options,
   });
 }

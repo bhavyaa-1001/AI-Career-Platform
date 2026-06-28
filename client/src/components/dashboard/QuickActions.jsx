@@ -6,8 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 const ACTIONS = [
   { to: '/profile', label: 'Edit Profile', desc: 'Update your career details', primary: true },
   { to: '/resumes', label: 'Build Resume', desc: 'Create ATS-friendly resumes' },
-  { to: '/profile/preview', label: 'Preview Profile', desc: 'See how others view you' },
-  { to: '/profile', label: 'Add Skills', desc: 'Showcase your expertise' },
+  { to: '/jobs', label: 'Browse Jobs', desc: 'Search and apply to openings' },
+  { to: '/applications', label: 'My Applications', desc: 'Track application status' },
+  { to: '/coding', label: 'Coding Practice', desc: 'Solve LeetCode-style problems' },
+  { to: '/match', label: 'Job Match', desc: 'Compare resume vs job description' },
+  { to: '/insights', label: 'Insights Hub', desc: 'Unified analytics dashboard' },
 ];
 
 export function QuickActions() {

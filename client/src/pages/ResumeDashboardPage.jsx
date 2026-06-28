@@ -51,6 +51,9 @@ export function ResumeDashboardPage() {
           <p className="mt-1 text-muted-foreground">Create ATS-friendly resumes with live preview and version history.</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Link to="/analysis">
+            <Button type="button" variant="outline">AI Analysis</Button>
+          </Link>
           <Link to="/resumes/import">
             <Button type="button" variant="outline">Import PDF/DOCX</Button>
           </Link>

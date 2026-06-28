@@ -1,5 +1,6 @@
 import { parseUploadedResume, saveImportedResume } from '../services/resumeImportService.js';
 import { exportResumePdf } from '../services/resumePdfService.js';
+import { applyRewrite, generateRewrite } from '../services/resumeRewriteService.js';
 import {
   createResume,
   deleteResume,
@@ -31,9 +32,10 @@ export const createResumeHandler = asyncHandler(async (req, res) => {
 });
 
 export const updateResumeHandler = asyncHandler(async (req, res) => {
-  const resume = await updateResume(req.params.id, req.user._id, req.body, {
+  const { versionLabel, ...data } = req.body;
+  const resume = await updateResume(req.params.id, req.user._id, data, {
     autosave: false,
-    versionLabel: 'Manual save',
+    versionLabel: versionLabel || 'Manual save',
   });
   res.status(200).json({ success: true, message: 'Resume saved', data: { resume } });
 });
@@ -108,4 +110,14 @@ export const getVersionHandler = asyncHandler(async (req, res) => {
 export const restoreVersionHandler = asyncHandler(async (req, res) => {
   const resume = await restoreResumeVersion(req.params.id, req.params.versionId, req.user._id);
   res.status(200).json({ success: true, message: 'Version restored', data: { resume } });
+});
+
+export const rewriteResumeHandler = asyncHandler(async (req, res) => {
+  const result = await generateRewrite(req.params.id, req.user._id, req.body);
+  res.status(200).json({ success: true, message: 'Rewrite generated', data: result });
+});
+
+export const applyRewriteHandler = asyncHandler(async (req, res) => {
+  const resume = await applyRewrite(req.params.id, req.user._id, req.body);
+  res.status(200).json({ success: true, message: 'AI rewrite applied', data: { resume } });
 });

@@ -7,6 +7,7 @@ export function Badge({ className, variant = 'default', children, ...props }) {
     warning: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
     destructive: 'bg-destructive/10 text-destructive',
     outline: 'border border-border text-muted-foreground',
+    secondary: 'bg-muted text-muted-foreground',
   };
 
   return (

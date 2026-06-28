@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 const ACCEPT = '.pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
-export function ResumeUploadZone({ onUpload, loading, error }) {
+export function ResumeUploadZone({ onUpload, loading, loadingText = 'Parsing resume...', error }) {
   const inputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
 
@@ -45,7 +45,7 @@ export function ResumeUploadZone({ onUpload, loading, error }) {
           <svg className="mb-4 h-12 w-12 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
           </svg>
-          <p className="font-medium">{loading ? 'Parsing resume...' : 'Drop PDF or DOCX here'}</p>
+          <p className="font-medium">{loading ? loadingText : 'Drop PDF or DOCX here'}</p>
           <p className="mt-1 text-sm text-muted-foreground">or click to browse · max 10MB</p>
           <Button type="button" className="mt-4" size="sm" disabled={loading}>
             Choose File

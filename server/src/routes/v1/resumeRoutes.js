@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import {
   autosaveResumeHandler,
+  applyRewriteHandler,
   createResumeHandler,
   deleteResumeHandler,
   duplicateResumeHandler,
@@ -14,6 +15,7 @@ import {
   listVersionsHandler,
   parseImportHandler,
   restoreVersionHandler,
+  rewriteResumeHandler,
   saveImportHandler,
   updateResumeHandler,
 } from '../../controllers/resumeController.js';
@@ -30,6 +32,10 @@ import {
   updateResumeSchema,
   versionIdSchema,
 } from '../../validators/resumeValidator.js';
+import {
+  applyRewriteSchema,
+  rewriteResumeSchema,
+} from '../../validators/rewriteValidator.js';
 
 const router = Router();
 
@@ -40,6 +46,8 @@ router.post('/', validate(createResumeSchema), createResumeHandler);
 router.post('/import/parse', uploadResume.single('file'), handleMulterError, parseImportHandler);
 router.post('/import/save', validate(importSaveSchema), saveImportHandler);
 router.post('/import-profile', validate(importProfileSchema), importProfileHandler);
+router.post('/:id/rewrite', validate(rewriteResumeSchema), rewriteResumeHandler);
+router.post('/:id/rewrite/apply', validate(applyRewriteSchema), applyRewriteHandler);
 router.get('/:id/pdf', validate(resumeIdSchema), exportPdfGetHandler);
 router.post('/:id/pdf', validate(exportPdfSchema), exportPdfPostHandler);
 router.get('/:id', validate(resumeIdSchema), getResume);

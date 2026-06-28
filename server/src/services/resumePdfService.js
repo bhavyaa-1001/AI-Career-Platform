@@ -34,6 +34,7 @@ export const generatePdfBuffer = async (html) => {
     page = await browser.newPage();
     await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1 });
     await page.setContent(html, { waitUntil: 'load', timeout: 30000 });
+    /* eslint-disable no-undef -- evaluated in Puppeteer browser context */
     await page.evaluate(async () => {
       if (document.fonts?.ready) await document.fonts.ready;
     });
@@ -42,6 +43,7 @@ export const generatePdfBuffer = async (html) => {
       const text = document.body?.innerText?.replace(/\s+/g, ' ').trim() || '';
       return text.length > 0;
     });
+    /* eslint-enable no-undef */
     if (!hasVisibleText) {
       throw new ApiError(500, 'PDF generation failed: resume has no visible content');
     }

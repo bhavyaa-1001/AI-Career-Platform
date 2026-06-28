@@ -15,7 +15,7 @@ const personalInfoSchema = z.object({
   website: optionalUrl,
 });
 
-const contentSchema = z.object({
+export const contentSchema = z.object({
   personalInfo: personalInfoSchema.optional(),
   summary: z.object({ text: z.string().max(2000).optional() }).optional(),
   education: z.array(z.record(z.unknown())).optional(),
@@ -64,6 +64,7 @@ export const updateResumeSchema = z.object({
     sectionVisibility: z.record(z.boolean()).optional(),
     content: contentSchema.optional(),
     isDefault: z.boolean().optional(),
+    versionLabel: z.string().min(1).max(100).optional(),
   }),
 });
 

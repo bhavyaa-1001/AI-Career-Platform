@@ -24,6 +24,13 @@ const envSchema = z.object({
   CLOUDINARY_CLOUD_NAME: z.string().optional().transform((v) => v?.trim() || undefined),
   CLOUDINARY_API_KEY: z.string().optional().transform((v) => v?.trim() || undefined),
   CLOUDINARY_API_SECRET: z.string().optional().transform((v) => v?.trim() || undefined),
+
+  GEMINI_API_KEY: z.string().optional().transform((v) => v?.trim() || undefined),
+  GEMINI_MODEL: z.string().default('gemini-2.5-flash-lite'),
+
+  JUDGE0_API_URL: z.string().url().default('https://ce.judge0.com'),
+  JUDGE0_AUTH_TOKEN: z.string().optional().transform((v) => v?.trim() || undefined),
+  JUDGE0_RAPIDAPI_KEY: z.string().optional().transform((v) => v?.trim() || undefined),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -40,3 +47,7 @@ export const isEmailConfigured = Boolean(env.SMTP_HOST && env.SMTP_USER && env.S
 export const isCloudinaryConfigured = Boolean(
   env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET,
 );
+
+export const isGeminiConfigured = Boolean(env.GEMINI_API_KEY);
+
+export const isJudge0Configured = Boolean(env.JUDGE0_AUTH_TOKEN || env.JUDGE0_RAPIDAPI_KEY);
