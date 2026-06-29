@@ -90,6 +90,14 @@ export function useHintSession(problemId) {
   });
 }
 
+export function useAdminProblem(id) {
+  return useQuery({
+    queryKey: ['coding', 'admin', 'problem', id],
+    queryFn: () => codingApi.adminGetProblem(id),
+    enabled: Boolean(id),
+  });
+}
+
 export function useCodingMutations() {
   const qc = useQueryClient();
   const invalidate = () => {

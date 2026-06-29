@@ -24,7 +24,7 @@ export const listProblemsSchema = z.object({
     category: z.enum(PROBLEM_CATEGORIES).optional(),
     tag: z.string().optional(),
     search: z.string().optional(),
-    status: z.enum(PROBLEM_STATUSES).optional(),
+    status: z.enum([...PROBLEM_STATUSES, 'all']).optional(),
   }),
 });
 

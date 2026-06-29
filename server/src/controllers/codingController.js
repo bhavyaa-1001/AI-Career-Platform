@@ -23,6 +23,8 @@ import { getLeaderboardEntries, getUserRank } from '../services/codingProfileSer
 import { getOrCreateDailyChallenge, getDailyCalendar } from '../services/dailyChallengeService.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
+const isCodingAdmin = (user) => user?.role === 'admin' || user?.role === 'sub_admin';
+
 export const codingStatusHandler = asyncHandler(async (_req, res) => {
   res.json({
     success: true,
@@ -38,17 +40,22 @@ export const codingStatusHandler = asyncHandler(async (_req, res) => {
 
 // Problems (public list + admin CRUD)
 export const listProblemsHandler = asyncHandler(async (req, res) => {
-  const isAdmin = req.user?.role === 'admin';
+  const admin = isCodingAdmin(req.user);
+  let status = 'published';
+  if (admin && req.query.status) {
+    status = req.query.status;
+  }
+
   const result = await listProblems({
     ...req.query,
-    status: isAdmin && req.query.status ? req.query.status : 'published',
+    status,
   });
   res.json({ success: true, data: result });
 });
 
 export const getProblemHandler = asyncHandler(async (req, res) => {
-  const isAdmin = req.user?.role === 'admin';
-  const problem = await getProblemBySlug(req.params.slug, { admin: isAdmin });
+  const admin = isCodingAdmin(req.user);
+  const problem = await getProblemBySlug(req.params.slug, { admin });
   let userState = null;
   if (req.user) {
     userState = await getProblemUserState(req.user._id, problem.id);

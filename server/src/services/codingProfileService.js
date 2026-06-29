@@ -5,11 +5,18 @@ import { UserCodingProfile } from '../models/UserCodingProfile.js';
 const todayKey = () => new Date().toISOString().slice(0, 10);
 
 export const getOrCreateProfile = async (userId) => {
-  let profile = await UserCodingProfile.findOne({ userId });
-  if (!profile) {
-    profile = await UserCodingProfile.create({ userId });
+  try {
+    return await UserCodingProfile.findOneAndUpdate(
+      { userId },
+      { $setOnInsert: { userId } },
+      { upsert: true, new: true },
+    );
+  } catch (err) {
+    if (err.code === 11000) {
+      return UserCodingProfile.findOne({ userId });
+    }
+    throw err;
   }
-  return profile;
 };
 
 const updateStreak = (profile) => {

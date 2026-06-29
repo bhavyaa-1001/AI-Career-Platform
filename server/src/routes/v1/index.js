@@ -32,7 +32,7 @@ router.use('/notifications', notificationRoutes);
 router.use('/resumes', ...withUsageLimit('resumeCount', { increment: true }), resumeRoutes);
 router.use('/resume-match', ...withUsageLimit('aiCredits', { increment: true }), resumeMatchRoutes);
 router.use('/analysis', ...withUsageLimit('aiCredits', { increment: true }), analysisRoutes);
-router.use('/coding', ...withUsageLimit('codingSubmissions', { increment: true }), codingRoutes);
+router.use('/coding', codingRoutes);
 router.use('/cover-letters', ...withUsageLimit('aiCredits', { increment: true }), coverLetterRoutes);
 router.use('/insights', insightsRoutes);
 router.use('/jobs', ...withUsageLimit('jobApplications', { increment: true }), jobRoutes);

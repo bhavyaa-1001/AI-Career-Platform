@@ -51,7 +51,10 @@ export function ProblemWorkspacePage() {
     if (!problem?.id || !code) return;
     clearTimeout(autoSaveRef.current);
     autoSaveRef.current = setTimeout(() => {
-      saveDraft.mutate({ problemId: problem.id, language, sourceCode: code });
+      saveDraft.mutate(
+        { problemId: problem.id, language, sourceCode: code },
+        { onError: () => {} },
+      );
       dispatch(setProblemCode({ problemId: problem.id, code }));
     }, 3000);
     return () => clearTimeout(autoSaveRef.current);

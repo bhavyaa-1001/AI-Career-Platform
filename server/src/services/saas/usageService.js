@@ -1,4 +1,5 @@
 import { isUnlimited, SAAS_PLANS, USAGE_TO_LIMIT_MAP } from '../../config/saasConstants.js';
+import { CodingSubmission } from '../../models/CodingSubmission.js';
 import { Plan } from '../../models/admin/Plan.js';
 import { UsageRecord } from '../../models/saas/UsageRecord.js';
 import { ApiError } from '../../utils/ApiError.js';
@@ -8,17 +9,43 @@ import { getUserPlan } from './billingAccountService.js';
 
 const currentPeriod = () => new Date().toISOString().slice(0, 7);
 
+const periodStartDate = (period = currentPeriod()) => new Date(`${period}-01T00:00:00.000Z`);
+
+/** Corrects inflated codingSubmissions counts from when drafts/runs were wrongly metered. */
+const reconcileCodingSubmissions = async (userId, record) => {
+  const actualCount = await CodingSubmission.countDocuments({
+    userId,
+    isRun: false,
+    createdAt: { $gte: periodStartDate(record.period) },
+  });
+
+  if (record.codingSubmissions !== actualCount) {
+    record.codingSubmissions = actualCount;
+    await record.save();
+  }
+
+  return actualCount;
+};
+
 export const getUsageRecord = async (userId) => {
   const period = currentPeriod();
-  let record = await UsageRecord.findOne({ userId, period });
-  if (!record) {
-    record = await UsageRecord.create({ userId, period });
+  try {
+    return await UsageRecord.findOneAndUpdate(
+      { userId, period },
+      { $setOnInsert: { userId, period } },
+      { upsert: true, new: true },
+    );
+  } catch (err) {
+    if (err.code === 11000) {
+      return UsageRecord.findOne({ userId, period });
+    }
+    throw err;
   }
-  return record;
 };
 
 export const getUsageSummary = async (userId) => {
   const record = await getUsageRecord(userId);
+  await reconcileCodingSubmissions(userId, record);
   const { limits } = await getUserPlan(userId);
 
   const usage = record.toSafeObject();
@@ -62,14 +89,22 @@ export const checkUsageLimit = async (userId, metric) => {
   if (isUnlimited(limit)) return { allowed: true, unlimited: true };
 
   const record = await getUsageRecord(userId);
-  const used = record[metric] || 0;
+  let used = record[metric] || 0;
+
+  if (metric === 'codingSubmissions') {
+    used = await reconcileCodingSubmissions(userId, record);
+  }
 
   if (used >= limit) {
+    const message = metric === 'codingSubmissions'
+      ? `Monthly coding submit limit reached (${used}/${limit}). Upgrade on Billing, or use Run to test without submitting.`
+      : `Plan limit reached for ${metric} (${used}/${limit}). Upgrade your subscription to continue.`;
+
     return {
       allowed: false,
       used,
       limit,
-      message: `Plan limit reached for ${metric}. Upgrade your subscription to continue.`,
+      message,
     };
   }
 
@@ -79,7 +114,7 @@ export const checkUsageLimit = async (userId, metric) => {
 export const assertUsageLimit = async (userId, metric) => {
   const result = await checkUsageLimit(userId, metric);
   if (!result.allowed) {
-    throw new ApiError(403, result.message);
+    throw new ApiError(403, result.message, [], 'PLAN_LIMIT_REACHED');
   }
   return result;
 };

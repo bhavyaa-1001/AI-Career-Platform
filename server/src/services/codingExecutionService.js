@@ -129,12 +129,24 @@ export const submitCode = async (userId, { problemId, slug, language, sourceCode
 };
 
 export const saveDraft = async (userId, { problemId, language, sourceCode }) => {
-  const draft = await CodingDraft.findOneAndUpdate(
-    { userId, problemId },
-    { language, sourceCode },
-    { upsert: true, new: true },
-  );
-  return draft.toSafeObject();
+  try {
+    const draft = await CodingDraft.findOneAndUpdate(
+      { userId, problemId },
+      { language, sourceCode },
+      { upsert: true, new: true },
+    );
+    return draft.toSafeObject();
+  } catch (err) {
+    if (err.code === 11000) {
+      const draft = await CodingDraft.findOneAndUpdate(
+        { userId, problemId },
+        { language, sourceCode },
+        { new: true },
+      );
+      return draft.toSafeObject();
+    }
+    throw err;
+  }
 };
 
 export const getDraft = async (userId, problemId) => {

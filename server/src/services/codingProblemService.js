@@ -3,7 +3,8 @@ import { CodingProblem } from '../models/CodingProblem.js';
 import { ApiError } from '../utils/ApiError.js';
 
 const buildFilter = ({ difficulty, category, tag, search, status = 'published' }) => {
-  const filter = { status };
+  const filter = {};
+  if (status) filter.status = status;
   if (difficulty) filter.difficulty = difficulty;
   if (category) filter.category = category;
   if (tag) filter.tags = tag;
@@ -19,7 +20,8 @@ const buildFilter = ({ difficulty, category, tag, search, status = 'published' }
 export const listProblems = async ({
   page = 1, limit = 20, difficulty, category, tag, search, status = 'published',
 } = {}) => {
-  const filter = buildFilter({ difficulty, category, tag, search, status });
+  const resolvedStatus = status === 'all' ? undefined : status;
+  const filter = buildFilter({ difficulty, category, tag, search, status: resolvedStatus });
   const skip = (page - 1) * limit;
   const [items, total] = await Promise.all([
     CodingProblem.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),

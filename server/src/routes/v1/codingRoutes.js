@@ -13,6 +13,7 @@ import {
   visualHintHandler,
 } from '../../controllers/codingController.js';
 import { authenticate, authorize, optionalAuth } from '../../middleware/auth.js';
+import { enforceUsage } from '../../middleware/usageEnforcement.js';
 import { validate } from '../../middleware/validate.js';
 import {
   bookmarkToggleSchema, codeReviewSchema, createContestSchema, createProblemSchema,
@@ -27,7 +28,7 @@ const router = Router();
 router.get('/status', codingStatusHandler);
 
 // Public / optional auth
-router.get('/problems', validate(listProblemsSchema), listProblemsHandler);
+router.get('/problems', optionalAuth, validate(listProblemsSchema), listProblemsHandler);
 router.get('/problems/:slug', validate(slugParamSchema), optionalAuth, getProblemHandler);
 router.get('/leaderboard', validate(leaderboardSchema), optionalAuth, leaderboardHandler);
 router.get('/daily', dailyChallengeHandler);
@@ -37,9 +38,9 @@ router.get('/contests/:id/leaderboard', validate(idParamSchema), contestLeaderbo
 
 router.use(authenticate);
 
-// Workspace
+// Workspace — only final submits count toward plan limits (not run/draft/AI/bookmarks)
 router.post('/run', validate(runCodeSchema), runCodeHandler);
-router.post('/submit', validate(submitCodeSchema), submitCodeHandler);
+router.post('/submit', enforceUsage('codingSubmissions', { increment: true }), validate(submitCodeSchema), submitCodeHandler);
 router.post('/draft', validate(saveDraftSchema), saveDraftHandler);
 router.get('/draft/:problemId', validate(draftParamSchema), getDraftHandler);
 router.get('/submissions', validate(listSubmissionsSchema), listSubmissionsHandler);
